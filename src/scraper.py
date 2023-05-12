@@ -13,16 +13,18 @@ index_page = 'https://bartoszmilewski.com/2014/10/28/category-theory-for-program
 
 def get_toc():
     result = []
-    part = 0
     chapter = 0
     lists = get_content(get(index_page).content).find_all('ol')
-    for part_list in lists:
-        part += 1
+    for part, part_list in enumerate(lists, start=1):
         for li in part_list.find_all('li'):
             chapter += 1
-            result.append({'chapter': '{}.{}'.format(part, chapter),
-                           'title': li.a.text,
-                           'url': li.a['href']})
+            result.append(
+                {
+                    'chapter': f'{part}.{chapter}',
+                    'title': li.a.text,
+                    'url': li.a['href'],
+                }
+            )
         chapter = 0
     return result
 
@@ -45,7 +47,7 @@ def save_images(markup, path):
         image_file = image_url.split('/')[-1]
         target_file = path.joinpath(image_file)
         urllib.request.urlretrieve(image_url, target_file)
-        img['src'] = 'images/' + target_file.name
+        img['src'] = f'images/{target_file.name}'
         img.parent.replaceWithChildren()  # removes the parent <a href...> and replaces it with the image
     return html
 
